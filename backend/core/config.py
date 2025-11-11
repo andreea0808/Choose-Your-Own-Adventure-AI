@@ -1,18 +1,20 @@
-from typing import List
-from pydantic_settings import BaseSettings
-from pydantic import field_validator
 import os
+from typing import List
+
+from pydantic import field_validator
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
     API_PREFIX: str = "/api"
-    DEBUG: bool = False
+    DEBUG: bool = True
 
     DATABASE_URL: str = None
 
     ALLOWED_ORIGINS: str = ""
 
-    OPENAI_API_KEY: str
+    OLLAMA_BASE_URL: str | None = "http://localhost:11434"
+    MISTRAL_OLLAMA_MODEL: str | None = "mistral:7b-instruct-q4_K_M"
 
     def __init__(self, **values):
         super().__init__(**values)

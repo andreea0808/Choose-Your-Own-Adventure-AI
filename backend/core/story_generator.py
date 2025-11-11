@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
+from langchain_ollama import ChatOllama
 from sqlalchemy.orm import Session
 
 from core.models import StoryLLMResponse, StoryNodeLLM
@@ -17,13 +17,17 @@ class StoryGenerator:
 
     @classmethod
     def _get_llm(cls):
-        openai_api_key = os.getenv("CHOREO_OPENAI_CONNECTION_OPENAI_API_KEY")
-        serviceurl = os.getenv("CHOREO_OPENAI_CONNECTION_SERVICEURL")
 
-        if openai_api_key and serviceurl:
-            return ChatOpenAI(model="gpt-4o-mini", api_key=openai_api_key, base_url=serviceurl)
+        ollama_model = os.getenv("MISTRAL_OLLAMA_MODEL", "mistral:7b-instruct-q4_K_M")
+        ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
-        return ChatOpenAI(model="gpt-4o-mini")
+        return ChatOllama(
+                model=ollama_model,
+                base_url=ollama_base_url,
+                temperature=0.8,
+                num_ctx=2048,
+                format="json"
+        )
 
     @classmethod
     def generate_story(cls, db: Session, session_id: str, theme: str = "fantasy") -> Story:
@@ -70,8 +74,9 @@ class StoryGenerator:
             content=node_data.content if hasattr(node_data, "content") else node_data["content"],
             is_root=is_root,
             is_ending=node_data.isEnding if hasattr(node_data, "isEnding") else node_data["isEnding"],
-            is_winning_ending=node_data.isWinningEnding if hasattr(node_data, "isWinningEnding") else node_data[
-                "isWinningEnding"],
+            is_winning_ending=(node_data.isWinningEnding
+                               if hasattr(node_data, "isWinningEnding")
+                               else node_data["isWinningEnding"]),
             options=[]
         )
         db.add(node)
