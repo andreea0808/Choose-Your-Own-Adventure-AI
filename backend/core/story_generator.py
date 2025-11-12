@@ -18,7 +18,7 @@ class StoryGenerator:
     @classmethod
     def _get_llm(cls):
 
-        ollama_model = os.getenv("MISTRAL_OLLAMA_MODEL", "mistral:7b-instruct-q4_K_M")
+        ollama_model = os.getenv("MISTRAL_OLLAMA_MODEL", "mistral:latest")
         ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
         return ChatOllama(

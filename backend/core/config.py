@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Optional
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings
@@ -7,14 +7,14 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     API_PREFIX: str = "/api"
-    DEBUG: bool = True
+    DEBUG: bool = False
 
-    DATABASE_URL: str = None
+    DATABASE_URL: Optional[str] = None
 
     ALLOWED_ORIGINS: str = ""
 
     OLLAMA_BASE_URL: str | None = "http://localhost:11434"
-    MISTRAL_OLLAMA_MODEL: str | None = "mistral:7b-instruct-q4_K_M"
+    MISTRAL_OLLAMA_MODEL: str | None = "mistral:latest"
 
     def __init__(self, **values):
         super().__init__(**values)
